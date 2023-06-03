@@ -29,9 +29,11 @@
                                         "scale(" scale ")"
                                         "rotate(-90)"))))
 
+
 (def orbit-stroke-scale (comp (u/bound 10 60) (u/scaler [0 180] [60 10])))
 (def ball-stroke-scale (comp (u/bound 10 90) (u/scaler [0 180] [10 90])))
 (def ball-fill-scale (u/scaler [0 (dec ball-count)] [20 50]))
+
 
 (defn on-tick [{:keys [start balls orbits]} now]
   (let [ts (- now start)]
