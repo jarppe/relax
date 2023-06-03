@@ -1,0 +1,11 @@
+{:deps   {:aliases [:dev]}
+ :builds {:web {:target           :browser
+                :output-dir       "public/js"
+                :asset-path       "js"
+                :modules          {:app {:entries [relax.app]}}
+                :compiler-options {:output-feature-set :es8}
+                :js-options       {:resolve {"Howl" {:target :global
+                                                     :global "Howl"}}}
+                :devtools         {:after-load relax.app/run
+                                   :http-root  "public"
+                                   :http-port  8900}}}}

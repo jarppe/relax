@@ -1,0 +1,54 @@
+name: relax-deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Cache Clojure deps
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: cljdeps-${{ hashFiles('deps.edn', 'shadow-cljs.edn') }}
+          restore-keys: cljdeps-
+
+      - name: Cache JS deps
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules
+          key: npmdeps-${{ hashFiles('package.json', 'package-lock.json') }}
+          restore-keys: npmdeps-
+
+      - name: Install deps
+        shell: bash
+        run: npm i
+
+      - name: Build
+        shell: bash
+        run: npm run release
+
+      - name: Check dist
+        shell: bash
+        run: ls -Fl ./public ./public/js
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
