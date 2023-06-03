@@ -21,7 +21,8 @@
   (let [svg    (:svg state)
         width  (j/get svg :clientWidth)
         height (j/get svg :clientHeight)
-        scale  (/ width 2000.0)
+        scale  (min (/ width 2000.0)
+                    (/ height 1000.0))
         scene  (:scene state)]
     (js/console.log `on-resize width "x" height "=>" scale)
     (svg/set-attr svg :viewBox (str "0 0 " width " " height))
@@ -113,11 +114,3 @@
      :scene  scene
      :balls  balls
      :orbits orbits}))
-
-
-;; :width           200
-;; :height          200
-;; :stroke          "hsl(8, 100%, 67%)"
-;; :fill            "none"
-;; :stroke-width    3
-;; :stroke-linejoin "round"
