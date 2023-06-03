@@ -2,7 +2,7 @@
   (:require [applied-science.js-interop :as j]
             [relax.svg :as svg]
             ["Howl" :as Howl]
-            [relax.audio-on :as audio-on]
+            [relax.toggle :as toggle]
             [relax.util :as u]))
 
 
@@ -39,7 +39,7 @@
 (defn on-tick [{:keys [start balls orbits]} now]
   (let [ts (- now start)]
     (doseq [n (range ball-count)]
-      (let [audio-on? (audio-on/audio-on?)
+      (let [audio-on? (toggle/audio-on?)
             ball      (nth balls n)
             orbit     (nth orbits n)
             speed     (js/parseFloat (svg/get-attr ball :speed))

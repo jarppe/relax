@@ -1,7 +1,8 @@
-html, body, div, svg {
+html, body, div, span, svg {
   margin: 0;
   padding: 0;
-  cursor: inherit
+  cursor: inherit;
+  user-select: none;
 }
 
 
@@ -13,8 +14,6 @@ svg {
 body {
   width: 100vw;
   height: 100vh;
-  background-color: hsl(0 0% 10%);
-  color: #eee;
   font-family: system-ui;
   cursor: pointer;
 }
@@ -23,7 +22,8 @@ body {
 #app {
   width: 100svw;
   height: 100svh;
-  cursor: inherit;
+  background-color: hsl(0 0% 10%);
+  color: #eee;
   display: flex;
   justify-items: stretch;
   flex-direction: column;
@@ -37,20 +37,32 @@ body {
   aspect-ratio: 2 / 1;
 }
 
-#audio-on {
+
+.toggle {
   position: absolute;
-  right: 1em;
   top: 1em;
   color: rgb(60,60,60);
   border-bottom: 1px dashed rgb(60,60,60);
 }
 
-#audio-on:hover {
+
+.toggle:hover {
   color: rgb(80,80,80);
   border-bottom: 1px dashed rgb(80,80,80);
 }
 
-#audio-on[data-audio="on"] {
+
+.toggle[data-value="on"] {
   color: rgb(20,60,20);
   border-bottom-color: rgb(20,60,20);
+}
+
+
+#audio {
+  right: 1em;
+}
+
+
+#fullscreen {
+  left: 1em;
 }

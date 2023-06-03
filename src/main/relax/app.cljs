@@ -1,7 +1,7 @@
 (ns relax.app
   (:require [applied-science.js-interop :as j]
             [relax.scene :as scene]
-            [relax.audio-on :as audio-on]))
+            [relax.toggle :as toggle]))
 
 
 (defonce start (j/call-in js/window [:performance :now]))
@@ -36,7 +36,7 @@
     (reset! ctrl-holder controller)
     (reset! run-holder run?)
     (j/call js/window :addEventListener "resize" (fn [_] (scene/on-resize scene)) opts)
-    (j/call js/document :addEventListener "click" (fn [_] (audio-on/toggle-audio)) opts)
+    (j/call js/document :addEventListener "click" toggle/click opts)
     (j/call (js/document.getElementById "app") :appendChild (:svg scene))
     (scene/on-resize scene)
     (j/call js/window :requestAnimationFrame (make-animation run? scene))))
