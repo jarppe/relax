@@ -21,8 +21,8 @@ body {
 
 
 #app {
-  width: 100dvw;
-  height: 100dvh;
+  width: 100svw;
+  height: 100svh;
   cursor: inherit;
   display: flex;
   justify-items: stretch;
@@ -41,16 +41,16 @@ body {
   position: absolute;
   right: 1em;
   bottom: 1em;
-  color: gray;
-  border-bottom: 1px dashed gray;
+  color: rgb(60,60,60);
+  border-bottom: 1px dashed rgb(60,60,60);
 }
 
 #audio-on:hover {
-  color: white;
-  border-bottom: 1px dashed white;
+  color: rgb(80,80,80);
+  border-bottom: 1px dashed rgb(80,80,80);
 }
 
 #audio-on[data-audio="on"] {
-  color: green;
-  border-bottom-color: green;
+  color: rgb(20,60,20);
+  border-bottom-color: rgb(20,60,20);
 }
