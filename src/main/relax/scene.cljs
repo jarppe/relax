@@ -1,7 +1,9 @@
 (ns relax.scene
   (:require [applied-science.js-interop :as j]
             [relax.svg :as svg]
-            ["Howl" :as Howl]))
+            ["Howl" :as Howl]
+            [relax.audio-on :as audio-on]
+            [relax.util :as u]))
 
 
 (def audio (->> ["G1.flac" "A1.flac" "B1.flac" "D2.flac" "F2.flac" "G2.flac" "B2.flac" "D3.flac" "E3.flac" "G3.flac" "A3.flac" "B3.flac" "D4.flac" "E4.flac" "F4.flac" "G4.flac" "A4.flac" "B4.flac" "D5.flac" "E5.flac" "F5.flac" "G5.flac" "A5.flac" "B5.flac" "C6.flac"]
@@ -13,12 +15,6 @@
 (def ^:const total-time (* 5 60 1000))
 (def ^:const min-laps 20)
 (def ^:const add-laps 0.5)
-
-
-(defonce audio-on? (atom false))
-
-
-(defn toggle-audio [] (swap! audio-on? not))
 
 
 (defn on-resize [state]
@@ -33,33 +29,35 @@
                                         "scale(" scale ")"
                                         "rotate(-90)"))))
 
+(def orbit-stroke-scale (comp (u/bound 10 60) (u/scaler [0 180] [60 10])))
+(def ball-stroke-scale (comp (u/bound 10 90) (u/scaler [0 180] [10 90])))
+(def ball-fill-scale (u/scaler [0 (dec ball-count)] [20 50]))
 
 (defn on-tick [{:keys [start balls orbits]} now]
   (let [ts (- now start)]
     (doseq [n (range ball-count)]
-      (let [ball  (nth balls n)
-            orbit (nth orbits n)
-            speed (js/parseFloat (svg/get-attr ball :speed))
-            a     (-> (* ts speed)
-                      (mod 360.0))
-            rot   (- a 180.0)
-            dir   (if (pos? rot) "p" "n")
-            angle (-> rot (abs) (- 90.0))
-            dist  (- 100.0 (* 100.0 (/ (mod a 180) 180.0)))
-            color (* n (/ 360 ball-count))]
-        (svg/set-attr orbit :stroke (str "hsl(0 0% " dist "%)"))
+      (let [audio-on? (audio-on/audio-on?)
+            ball      (nth balls n)
+            orbit     (nth orbits n)
+            speed     (js/parseFloat (svg/get-attr ball :speed))
+            a         (-> (* ts speed)
+                          (mod 360.0))
+            rot       (- a 180.0)
+            dir       (if (pos? rot) "p" "n")
+            angle     (-> rot (abs) (- 90.0))]
+        (svg/set-attr orbit
+                      :stroke (str "hsl(0 0% " (orbit-stroke-scale (mod a 180)) "%)"))
         (svg/set-attr ball
                       :transform (str "rotate(" angle ")")
-                      :stroke (str "hsl(0 0% " dist "%)")
-                      :fill (str "hsl(200 " color "% " dist "%)"))
+                      :stroke (str "hsl(0 0% " (ball-stroke-scale (mod a 180)) "%)")
+                      :fill (str "hsl(320 100% " (ball-fill-scale n) "%)"))
         (when (not= (svg/get-attr ball :dir) dir)
-          (when @audio-on?
+          (svg/set-attr ball :dir dir)
+          (when audio-on?
             (let [ndx   (js/parseInt (svg/get-attr ball :ndx))
                   sound ^js (nth audio ndx)]
-              (.stereo sound (if (= dir "p") -1.0 1.0))
-              (.play sound)))
-          (println "DIR" dir)
-          (svg/set-attr ball :dir dir))))))
+              (.stereo sound (if (= dir "p") -0.9 0.9))
+              (.play sound))))))))
 
 
 (defn ball-index->r [n]
