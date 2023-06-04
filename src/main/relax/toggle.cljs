@@ -3,8 +3,10 @@
             [relax.util :as u]))
 
 
-(defonce -audio (atom false))
+(defonce -can-fullscreen (atom false))
 (defonce -fullscreen (atom false))
+(defonce -audio (atom false))
+
 
 
 (defn audio-on? []
@@ -28,8 +30,9 @@
 
 
 (defn- toggle-fullscreen [_]
-  (let [on? (swap! -fullscreen not)]
-    (set-fullscreen on?)))
+  (when @-can-fullscreen
+    (let [on? (swap! -fullscreen not)]
+      (set-fullscreen on?))))
 
 
 (defn- toggle-audio [_]
@@ -47,5 +50,11 @@
 
 
 (defn init []
-  (set-fullscreen @-fullscreen)
+  (when (some? (j/get js/document :exitFullscreen))
+    (reset! -can-fullscreen true)
+    (u/append "app" (u/create-element "div" {:id    "fullscreen"
+                                             :class "toggle"}))
+    (set-fullscreen @-fullscreen))
+  (u/append "app" (u/create-element "div" {:id    "audio"
+                                           :class "toggle"}))
   (set-audio @-audio))

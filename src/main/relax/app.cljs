@@ -5,13 +5,23 @@
             [relax.util :as u]))
 
 
+; Save start time. This helps in dev. When changes are hot-reloaded, the
+; visualizations continue without jump because we have saved the start time
+; of the initial rendering.
 (defonce start-time (j/call-in js/window [:performance :now]))
 
 
+; Hold controller in atom. Allows easy unregistering of DOM listeners:
 (defonce ctrl-holder (atom nil))
+
+
+; Atom to hole run atom. Incepton style atom in atom. The inner atom is
+; passed to animation loop.
 (defonce run-holder (atom nil))
 
 
+; Make animation function. Accepts an atom to control when to exit, and a
+; scnene to animate:
 (defn make-animation [run? scene]
   (fn animation [ts]
     (when @run?
@@ -19,6 +29,7 @@
       (j/call js/window :requestAnimationFrame animation))))
 
 
+; Cleanup everything:
 (defn cleanup []
   (when-let [run? @run-holder]
     (reset! run? false)
@@ -29,6 +40,7 @@
   (u/set-text "app" ""))
 
 
+; Create and start everything:
 (defn start []
   (let [controller (js/AbortController.)
         opts       (j/obj :signal (j/get controller :signal))
@@ -44,6 +56,7 @@
     (j/call js/window :requestAnimationFrame (make-animation run? scene))))
 
 
+; Start point of the app. Called just once from index.html:
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defn ^:export run []
   (cleanup)

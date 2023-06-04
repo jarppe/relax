@@ -36,3 +36,22 @@
   (let [elem (get-elem elem)]
     (j/assoc! elem :textContent text-content)
     elem))
+
+
+(defn create-element [tag & children]
+  (let [[attrs children] (if (map? (first children))
+                           [(first children) (rest children)]
+                           [nil children])
+        elem             (j/call js/document :createElement tag)]
+    (doseq [[attr-name attr-value] attrs]
+      (j/call elem :setAttribute (name attr-name) (str attr-value)))
+    (doseq [child children]
+      (j/call elem :append child))
+    elem))
+
+
+(defn append [elem & children]
+  (let [elem (get-elem elem)]
+    (doseq [child children]
+      (j/call elem :append child))
+    elem))
