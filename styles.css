@@ -11,22 +11,25 @@ svg {
 }
 
 
+/* In fullscreen the #wrapper is the "fullscreen" element. Thus its important
+   that both body and @wrapper have background color set. */
+
+
 body {
-  width: 100vw;
-  height: 100vh;
   font-family: system-ui;
   cursor: pointer;
+  background-color: hsl(0 0% 10%);
 }
+
 
 #wrapper {
   background-color: hsl(0 0% 10%);
-  color: #eee;
 }
 
 
 #app {
-  width: 100svw;
-  height: 100svh;
+  width: 100dvw;
+  height: 100dvh;
   display: flex;
   justify-items: stretch;
   flex-direction: column;
