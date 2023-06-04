@@ -33,42 +33,50 @@
                                         "rotate(-90)"))))
 
 
-(defn ts->angle [ts]
-  (let [a (mod ts 360.0)]
-    (cond
-      (< a 90.0) a
-      (< a 270.0) (- 90.0 (- a 90.0))
-      :else (+ -90.0 (- a 270.0)))))
+(defn angle->ball-rotation [angle]
+  (cond
+    (< angle 90.0) angle
+    (< angle 270.0) (- 90.0 (- angle 90.0))
+    :else (+ -90.0 (- angle 270.0))))
 
 
-(def orbit-stroke-scale (comp (u/bound 10 60) (u/scaler [0 180] [60 10])))
-(def ball-stroke-scale (comp (u/bound 10 90) (u/scaler [0 180] [10 90])))
-(def ball-fill-scale (u/scaler [0 (dec ball-count)] [20 50]))
+(def angle->phase-dist
+  (let [phase-dist-scale (comp (u/bound 0.0 100.0)
+                               (u/scaler [0.0 90.0] [100.0 0.0]))]
+    (fn [angle]
+      (phase-dist-scale (cond
+                          (< 90.0 angle 180.0) (- angle 90.0)
+                          (< 270.0 angle 360.0) (- angle 270)
+                          :else 100.0)))))
+
+
+
+(def phase-dist->ball-stroke-luminosity (u/scaler [0.0 100.0] [40.0 100.0]))
+(def phase-dist->orbit-luminosity (u/scaler [0.0 100.0] [20.0 60.0]))
 
 
 (defn on-tick [{:keys [start balls orbits]} now]
   (let [ts        (- now start)
         audio-on? (toggle/audio-on?)]
     (doseq [n (range ball-count)]
-      (let [ball  (nth balls n)
-            orbit (nth orbits n)
-            speed (js/parseFloat (svg/get-attr ball :speed))
-            a     (-> (* ts speed)
-                      (mod 360.0))
-            rot   (- a 180.0)
-            dir   (if (pos? rot) "p" "n")
-            angle (ts->angle (* ts speed))]
-        (svg/set-attr orbit
-                      :stroke (str "hsl(0 0% " (orbit-stroke-scale (mod a 180)) "%)"))
+      (let [ball       (nth balls n)
+            orbit      (nth orbits n)
+            speed      (-> (svg/get-attr ball :speed)
+                           (js/parseFloat))
+            angle      (mod (* ts speed) 360.0)
+            phase      (if (< 90 angle 270) "d" "r")
+            phase-dist (angle->phase-dist angle)]
+        #_(when (zero? n)
+            (println "phase:" (.toFixed angle 1) "=>" (.toFixed phase-dist 1)))
+        (svg/set-attr orbit :stroke (str "hsl(0 0% " (phase-dist->orbit-luminosity phase-dist) "%)"))
         (svg/set-attr ball
-                      :transform (str "rotate(" angle ")")
-                      :stroke (str "hsl(0 0% " (ball-stroke-scale (mod a 180)) "%)")
-                      :fill (str "hsl(320 100% " (ball-fill-scale n) "%)"))
-        (when (not= (svg/get-attr ball :dir) dir)
-          (svg/set-attr ball :dir dir)
+                      :transform (str "rotate(" (angle->ball-rotation angle) ")")
+                      :stroke (str "hsl(0 0% " (phase-dist->ball-stroke-luminosity phase-dist) "%)"))
+        (when (not= (svg/get-attr ball :phase) phase)
+          (svg/set-attr ball :phase phase)
           (when audio-on?
             (doto (nth audio-elements n)
-              (j/call :stereo (if (= dir "p") -0.9 0.9))
+              (j/call :stereo (if (= phase "r") -0.9 0.9))
               (j/call :play))))))))
 
 
@@ -82,13 +90,17 @@
       (/ total-time)))
 
 
+(def ball-index->ball-fill (u/scaler [0 ball-count] [200.0 300.0]))
+
+
 (defn make-ball [n]
   (let [orbit-radius (ball-index->orbit-radius n)
         speed        (ball-index->speed n)]
     (svg/g {:speed speed}
-           (svg/circle {:cx orbit-radius
-                        :cy 0
-                        :r  15}))))
+           (svg/circle {:cx   orbit-radius
+                        :cy   0
+                        :r    15
+                        :fill (str "hsl(" (ball-index->ball-fill n) " 100% 50%)")}))))
 
 
 (defn make-orbit [n]
