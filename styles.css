@@ -18,12 +18,15 @@ body {
   cursor: pointer;
 }
 
+#wrapper {
+  background-color: hsl(0 0% 10%);
+  color: #eee;
+}
+
 
 #app {
   width: 100svw;
   height: 100svh;
-  background-color: hsl(0 0% 10%);
-  color: #eee;
   display: flex;
   justify-items: stretch;
   flex-direction: column;
