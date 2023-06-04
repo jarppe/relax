@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="100"
+     height="100"
+     viewBox="0 0 100 100"
+     stroke="hsl(0, 100%, 100%)"
+     fill="hsl(0, 100%, 60%)"
+     stroke-width="3"
+     stroke-linejoin="round"
+     stroke-linecap="round">
+  <path stroke="gray"
+        fill="none"
+        stroke-width="0.1"
+        d="M50 0 v100 M0 50 h100" />
+  <circle cx="50"
+          cy="50"
+          r="45" />
+  <path stroke-width="8"
+        d="M30 30 l40 40 M30 70 l40 -40" />
+</svg>

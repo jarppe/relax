@@ -1,8 +1,12 @@
 {:deps   {:aliases [:dev]}
  :builds {:web {:target           :browser
-                :output-dir       "public/js"
-                :asset-path       "js"
-                :modules          {:app {:entries [relax.app]}}
+                :output-dir       "public"
+                :modules          {:shared {:entries []}
+                                   :app    {:entries    [relax.app]
+                                            :depends-on #{:shared}}
+                                   :worker {:init-fn    relax.worker/init
+                                            :depends-on #{:shared}
+                                            :web-worker true}}
                 :compiler-options {:output-feature-set :es8}
                 :js-options       {:resolve {"Howl" {:target :global
                                                      :global "Howl"}}}

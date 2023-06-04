@@ -56,8 +56,16 @@
     (j/call js/window :requestAnimationFrame (make-animation run? scene))))
 
 
+(defn init-worker []
+  (println "init-worker: registering...")
+  (-> (j/call-in js/navigator [:serviceWorker :register] "worker.js" #js {:scope "./"})
+      (j/call :then (fn [_] (println "init-worker: registered")))
+      (j/call :catch (fn [error] (println "init-worker: failed" error)))))
+
+
 ; Start point of the app. Called just once from index.html:
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defn ^:export run []
+  (init-worker)
   (cleanup)
   (start))
