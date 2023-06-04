@@ -25,6 +25,9 @@
   (let [scale (scaler [100 200] [200 0])]
     (scale 150))
 
+  (println "  a:     x:")
+  (doseq [a [0 45 90 135 180 225 270 315 360 405]]
+    (println "  "))
 
   ;
   )
