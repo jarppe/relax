@@ -1,6 +1,7 @@
 {:deps   {:aliases [:dev]}
  :builds {:web {:target           :browser
                 :output-dir       "public"
+                :asset-path       "."
                 :modules          {:shared {:entries []}
                                    :app    {:entries    [relax.app]
                                             :depends-on #{:shared}}

@@ -38,13 +38,21 @@
     elem))
 
 
+(defn clear-elem ^js [elem]
+  (set-text elem ""))
+
+
 (defn create-element [tag & children]
   (let [[attrs children] (if (map? (first children))
                            [(first children) (rest children)]
                            [nil children])
         elem             (j/call js/document :createElement tag)]
     (doseq [[attr-name attr-value] attrs]
-      (j/call elem :setAttribute (name attr-name) (str attr-value)))
+      (if (= attr-name :class)
+        (j/apply-in elem [:classList :add] (map str (if (sequential? attr-value)
+                                                      (remove nil? attr-value)
+                                                      (cons attr-value nil))))
+        (j/call elem :setAttribute (name attr-name) (str attr-value))))
     (doseq [child children]
       (j/call elem :append child))
     elem))
@@ -55,3 +63,23 @@
     (doseq [child children]
       (j/call elem :append child))
     elem))
+
+
+(defn add-class [elem class]
+  (let [elem (get-elem elem)]
+    (j/call-in elem [:classList :add] class)
+    elem))
+
+
+(defn remove-class [elem class]
+  (let [elem (get-elem elem)]
+    (j/call-in elem [:classList :remove] class)
+    elem))
+
+
+(defn add-event-listener
+  ([elem event handler] (add-event-listener elem event handler nil))
+  ([elem event handler opts]
+   (let [elem (get-elem elem)]
+     (j/call elem :addEventListener (name event) handler opts)
+     elem)))

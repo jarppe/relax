@@ -23,6 +23,11 @@ init:
   @echo "\n\nReady"
 
 
+# Open stmux sessions
+stmux:
+  stmux -M -- [ [ "zsh" : -s 1/4 "zsh" ] .. "zsh" ]
+
+
 # Reverse proxy from public interface port 8888 to dev http:
 proxy:
   @echo "Opening proxy to public interface port 8888. This opens access from interwebs"

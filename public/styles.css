@@ -23,13 +23,76 @@ body {
 
 
 #wrapper {
+  width: 100dvw;
+  height: 100dvh;
   background-color: hsl(0 0% 10%);
+  position: relative;
+}
+
+
+#controls {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-areas: 
+    "fullscreen sound"
+    "prev next";
+  > div {
+    position: relative;
+    > span {
+      position: absolute;
+      padding: 0.5em;
+      color: rgb(60, 60, 60);
+    }
+    &:hover > span {
+      color: rgb(100, 100, 100);
+    }
+    &.active > span {
+      color: rgb(23, 87, 23);
+    }
+  }
+}
+
+
+#fullscreen { 
+  grid-area: fullscreen; 
+  > span {
+    top: 0;
+    left: 0;
+  }
+}
+
+
+#sound { 
+  grid-area: sound; 
+  > span {
+    top: 0;
+    right: 0;
+  }
+}
+
+
+#prev { 
+  grid-area: prev; 
+  > span {
+    bottom: 0;
+    left: 0;
+  }
+}
+
+
+#next { 
+  grid-area: next; 
+  > span {
+    bottom: 0;
+    right: 0;
+  }
 }
 
 
 #app {
-  width: 100dvw;
-  height: 100dvh;
+  position: absolute;
+  inset: 0;
   display: flex;
   justify-items: stretch;
   flex-direction: column;
@@ -40,35 +103,22 @@ body {
 
 #app > svg {
   width: 100%;
-  aspect-ratio: 2 / 1;
+  &.ar-2-1 {
+    aspect-ratio: 2 / 1;
+  }
+  &.ar-1-1 {
+    aspect-ratio: 1 / 1;
+  }
 }
 
 
-.toggle {
-  position: absolute;
-  top: 1em;
-  color: rgb(60,60,60);
-  border-bottom: 1px dashed rgb(60,60,60);
-}
-
-
-.toggle:hover {
-  color: rgb(80,80,80);
-  border-bottom: 1px dashed rgb(80,80,80);
-}
-
-
-.toggle[data-value="on"] {
-  color: rgb(20,60,20);
-  border-bottom-color: rgb(20,60,20);
-}
-
-
-#audio {
+#next {
+  bottom: 1em;
   right: 1em;
 }
 
 
-#fullscreen {
+#prev {
+  bottom: 1em;
   left: 1em;
 }
