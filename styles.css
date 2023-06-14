@@ -122,3 +122,13 @@ body {
   bottom: 1em;
   left: 1em;
 }
+
+
+#scene-name {
+  position: absolute;
+  top: 0.3rem;
+  left: 0;
+  width: 100vw;
+  text-align: center;
+  color: #575757;
+}
