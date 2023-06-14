@@ -1,7 +1,6 @@
 (ns relax.app
   (:require [clojure.string :as str]
             [applied-science.js-interop :as j]
-            [relax.state :refer [app-state]]
             [relax.fullscreen :as fullscreen]
             [relax.audio :as sound]
             [relax.controls :as controls]

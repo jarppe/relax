@@ -1,36 +1,46 @@
 (ns relax.scenes
   (:require [relax.state :as state]
-            [relax.pendulum :as pendulum]
-            [relax.util :as u]))
+            [relax.util :as u]
+            [relax.scene.pendulum :as pendulum]
+            [relax.scene.wind :as wind]))
 
 
-(def scenes [{:create-scene pendulum/create-scene
+(def scenes [{:name         "pendulum"
+              :create-scene pendulum/create-scene
               :on-resize    pendulum/on-resize
-              :on-tick      pendulum/on-tick}])
+              :on-tick      pendulum/on-tick}
+             {:name         "wind"
+              :create-scene wind/create-scene
+              :on-resize    wind/on-resize
+              :on-tick      wind/on-tick}])
 
 
-(def current-scene (atom nil))
+(defonce current-scene-id (atom nil))
+(defonce current-scene-data (atom nil))
 
 
 (defn swap-scene [scene-id]
-  (let [{:keys [create-scene on-resize on-tick]} (nth scenes scene-id)
-        scene-data                               (create-scene)]
-    (reset! current-scene {:scene     scene-data
-                           :on-resize on-resize
-                           :on-tick   on-tick})
+  (js/console.log "swap-scene:" scene-id)
+  (let [scene      (nth scenes scene-id)
+        scene-data ((:create-scene scene))]
+    (reset! current-scene-id scene-id)
+    (reset! current-scene-data scene-data)
+    (u/set-text "scene-name" (:name scene))
     (-> (u/clear-elem "app")
         (u/append (:elem scene-data)))
-    (on-resize scene-data nil)))
+    ((:on-resize scene) scene-data nil)))
 
 
 (defn on-tick [ts]
-  (let [{:keys [on-tick scene]} @current-scene]
-    (on-tick scene ts)))
+  (let [scene-id @current-scene-id
+        scene    (nth scenes scene-id)]
+    (swap! current-scene-data (:on-tick scene) ts)))
 
 
 (defn on-resize [e]
-  (let [{:keys [on-resize scene]} @current-scene]
-    (on-resize scene e)))
+  (let [scene-id @current-scene-id
+        scene    (nth scenes scene-id)]
+    (swap! current-scene-data (:on-resize scene) e)))
 
 
 (defn init! []

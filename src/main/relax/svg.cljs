@@ -44,3 +44,4 @@
 (def g (partial create-element "g"))
 (def circle (partial create-element "circle"))
 (def path (partial create-element "path"))
+(def line (partial create-element "line"))

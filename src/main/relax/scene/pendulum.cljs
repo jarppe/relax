@@ -1,4 +1,4 @@
-(ns relax.pendulum
+(ns relax.scene.pendulum
   (:require [applied-science.js-interop :as j]
             [relax.svg :as svg]
             [relax.audio :as audio]
@@ -11,8 +11,10 @@
 (def ^:const add-laps 0.5)
 
 
-(defn on-resize [{:keys [elem scene]} _]
-  (let [width  (j/get elem :clientWidth)
+(defn on-resize [scene-data _]
+  (let [elem   (:elem scene-data)
+        scene  (:scene scene-data)
+        width  (j/get elem :clientWidth)
         height (j/get elem :clientHeight)
         scale  (min (/ width 2000.0)
                     (/ height 1000.0))]
@@ -20,7 +22,8 @@
     (svg/set-attr elem :viewBox (str "0 0 " width " " height))
     (svg/set-attr scene :transform (str "translate(" (* width 0.5) " " height ") "
                                         "scale(" scale ")"
-                                        "rotate(-90)"))))
+                                        "rotate(-90)"))
+    scene-data))
 
 
 (defn angle->ball-rotation [angle]
@@ -45,22 +48,24 @@
 (def phase-dist->orbit-luminosity (u/scaler [0.0 100.0] [20.0 60.0]))
 
 
-(defn on-tick [{:keys [balls orbits]} ts]
-  (doseq [n (range ball-count)]
-    (let [ball       (nth balls n)
-          orbit      (nth orbits n)
-          speed      (-> (svg/get-attr ball :speed)
-                         (js/parseFloat))
-          angle      (mod (* ts speed) 360.0)
-          phase      (if (< 90 angle 270) "d" "r")
-          phase-dist (angle->phase-dist angle)]
-      (svg/set-attr orbit :stroke (str "hsl(0 0% " (phase-dist->orbit-luminosity phase-dist) "%)"))
-      (svg/set-attr ball
-                    :transform (str "rotate(" (angle->ball-rotation angle) ")")
-                    :stroke (str "hsl(0 0% " (phase-dist->ball-stroke-luminosity phase-dist) "%)"))
-      (when (not= (svg/get-attr ball :phase) phase)
-        (svg/set-attr ball :phase phase)
-        (audio/play n (if (= phase "r") -0.9 0.9))))))
+(defn on-tick [scene-data ts]
+  (let [{:keys [balls orbits]} scene-data]
+    (doseq [n (range ball-count)]
+      (let [ball       (nth balls n)
+            orbit      (nth orbits n)
+            speed      (-> (svg/get-attr ball :speed)
+                           (js/parseFloat))
+            angle      (mod (* ts speed) 360.0)
+            phase      (if (< 90 angle 270) "d" "r")
+            phase-dist (angle->phase-dist angle)]
+        (svg/set-attr orbit :stroke (str "hsl(0 0% " (phase-dist->orbit-luminosity phase-dist) "%)"))
+        (svg/set-attr ball
+                      :transform (str "rotate(" (angle->ball-rotation angle) ")")
+                      :stroke (str "hsl(0 0% " (phase-dist->ball-stroke-luminosity phase-dist) "%)"))
+        (when (not= (svg/get-attr ball :phase) phase)
+          (svg/set-attr ball :phase phase)
+          (audio/play n (if (= phase "r") -0.9 0.9)))))
+    scene-data))
 
 
 (defn- ball-index->orbit-radius [n]
