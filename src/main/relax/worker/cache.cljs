@@ -4,7 +4,7 @@
 
 
 (defn cache []
-  (j/call js/caches :open "v1"))
+  (j/call js/caches :open "v2"))
 
 
 (defn add-resources-to-cache [resources]
