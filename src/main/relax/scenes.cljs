@@ -2,7 +2,8 @@
   (:require [relax.state :as state]
             [relax.util :as u]
             [relax.scene.pendulum :as pendulum]
-            [relax.scene.wind :as wind]))
+            [relax.scene.wind :as wind]
+            [relax.scene.tri :as tri]))
 
 
 (def scenes [{:name         "pendulum"
@@ -12,7 +13,11 @@
              {:name         "wind"
               :create-scene wind/create-scene
               :on-resize    wind/on-resize
-              :on-tick      wind/on-tick}])
+              :on-tick      wind/on-tick}
+             {:name         "tris"
+              :create-scene tri/create-scene
+              :on-resize    tri/on-resize
+              :on-tick      tri/on-tick}])
 
 
 (defonce current-scene-id (atom nil))

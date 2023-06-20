@@ -45,14 +45,11 @@
 
 
 (defn create-scene []
-  (let [lines (for [x    (range 100 2000 50)
-                    y    (range 100 1000 50)
+  (let [lines (for [x    (range 50 2000 50)
+                    y    (range 50 1000 50)
                     :let [frame (svg/g {:transform (str "translate(" x " " y ")")})
                           line (svg/g {:transform "scale(0) rotate(0)"}
-                                      (svg/line {:x1 0
-                                                 :y1 0
-                                                 :x2 0
-                                                 :y2 30}))]]
+                                      (svg/line 0 0 0 30))]]
                 {:x     x
                  :y     y
                  :frame (svg/append frame line)
@@ -65,7 +62,7 @@
                        scene)
      :scene   scene
      :wind-x  1000.0
-     :wind-dx 0.7
+     :wind-dx 0.9
      :wind-y  500.0
-     :wind-dy 0.4
+     :wind-dy 0.45
      :lines   lines}))

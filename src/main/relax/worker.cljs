@@ -21,13 +21,13 @@
                                                                           "./app.js"
                                                                           "./shared.js"
                                                                           "./favicon.ico"]
-                                                                         (->> audio/audio-urls
-                                                                              (map (fn [f] (str "./" f)))))))))
+                                                                         (map (fn [f] (str "./" f))
+                                                                              audio/audio-urls))))))
 
 
 (j/call js/self :addEventListener "fetch"
         (fn [event]
-          (j/call event :respondWith (cache/cache-first event))))
+          (j/call event :respondWith (cache/cache-fetch event))))
 
 
 (j/call js/self :addEventListener "message"

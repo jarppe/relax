@@ -85,16 +85,13 @@
   (let [orbit-radius (ball-index->orbit-radius n)
         speed        (ball-index->speed n)]
     (svg/g {:speed speed}
-           (svg/circle {:cx   orbit-radius
-                        :cy   0
-                        :r    15
-                        :fill (str "hsl(" (ball-index->ball-fill n) " 100% 50%)")}))))
+           (svg/circle {:fill (str "hsl(" (ball-index->ball-fill n) " 100% 50%)")}
+                       orbit-radius 0 15))))
 
 
 (defn- make-orbit [n]
   (let [r (ball-index->orbit-radius n)]
-    (svg/path {:stroke (str "hsl(0 0% 30%)")
-               :d      (str "M 0," (- r) " A " r " " r " 180 1 1 0," r)})))
+    (svg/path {:stroke (str "hsl(0 0% 30%)")} (str "M 0," (- r) " A " r " " r " 180 1 1 0," r))))
 
 
 (defn create-scene []

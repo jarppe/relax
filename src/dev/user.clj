@@ -37,5 +37,51 @@
                                (println (format "  %3d   %3d" a (f a))))))
 
 
+  (require 'clojure.math)
+
+
+  (def ^:const PI clojure.math/PI)
+  (def ^:const sin clojure.math/sin)
+  (def ^:const cos clojure.math/cos)
+
+
+  (def ^:const PIx2   (* 2 PI))
+  (def ^:const PIp2   (* 0.5 PI))
+  (def ^:const PIx2p3 (/ PIx2 3.0))
+
+
+  (def ^:cont ball-count 25)
+  (def ^:const total-time (* 10 60 1000))
+  (def ^:const min-laps 10)
+  (def ^:const max-laps 20)
+
+
+  (def ^:const min-speed (/ (* PIx2 min-laps) total-time))
+  (def ^:const max-speed (/ (* PIx2 max-laps) total-time))
+  (def ^:const delta-speed (/ (- max-speed min-speed) ball-count))
+
+
+  (def tri-index->radius
+    (let [radiuses (vec (for [n (range ball-count)]
+                          (+ 50.0 (* n (/ 450.0 (+ ball-count 2.0))))))]
+      (partial nth radiuses)))
+
+
+  (def tri-index->speed
+    (let [speeds (vec (for [n (range ball-count)]
+                        (+ min-speed (* n delta-speed))))]
+      (partial nth speeds)))
+
+
+  (defn ball-pos [tri-index ball-index ts]
+    (let [radius (tri-index->radius tri-index)
+          speed  (tri-index->speed tri-index)
+          angle  (+ (* ball-index PIx2p3)
+                    (* ts speed))]
+      [(* radius (sin angle))
+       (* radius (cos angle))]))
+
+
+
   ;
   )

@@ -35,13 +35,42 @@
                            [nil children])]
     (doseq [[attr-name attr-value] attrs]
       (set-attr elem attr-name attr-value))
-    (if (sequential? (first children))
-      (apply append elem (first children))
-      (apply append elem children))))
+    (doseq [c children]
+      (if (sequential? c)
+        (append* elem c)
+        (append elem c)))
+    elem))
 
 
 (def svg (partial create-element "svg"))
 (def g (partial create-element "g"))
-(def circle (partial create-element "circle"))
-(def path (partial create-element "path"))
-(def line (partial create-element "line"))
+
+
+(defn circle
+  ([cx cy r] (circle nil cx cy r))
+  ([attrs cx cy r]
+   (create-element "circle" (assoc attrs :cx cx :cy cy :r r))))
+
+
+(defn path
+  ([d] (path nil d))
+  ([attrs d]
+   (create-element "path" (assoc attrs :d d))))
+
+
+(defn line
+  ([x1 y1 x2 y2] (line nil x1 y1 x2 y2))
+  ([attrs x1 y1 x2 y2]
+   (create-element "line" (assoc attrs
+                                 :x1 x1
+                                 :y1 y1
+                                 :x2 x2
+                                 :y2 y2))))
+
+(defn polyline
+  ([points] (polyline nil points))
+  ([attrs points]
+   (create-element "polyline" (assoc attrs :points (reduce (fn [acc [x y]]
+                                                             (str acc x "," y " "))
+                                                           ""
+                                                           points)))))

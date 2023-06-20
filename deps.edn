@@ -1,7 +1,8 @@
 {:paths   ["src/main"]
  :deps    {org.clojure/clojure        {:mvn/version "1.11.1"}
            org.clojure/clojurescript  {:mvn/version "1.11.60"}
-           applied-science/js-interop {:mvn/version "0.4.2"}}
+           applied-science/js-interop {:mvn/version "0.4.2"}
+           funcool/promesa            {:mvn/version "11.0.671"}}
 
  :aliases {:dev      {:extra-paths ["src/dev"]
                       :extra-deps  {binaryage/devtools   {:mvn/version "1.0.7"}
