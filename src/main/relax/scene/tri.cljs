@@ -101,13 +101,13 @@
                          ball (range 3)
                          :let [[x y] (ball-pos tri ball 0)]]
                      (svg/circle {:stroke-width 2
-                                  :stroke       "hsl(257deg, 35%, 49%)"
-                                  :fill         "hsl(257deg, 35%, 29%)"}
+                                  :stroke       "hsl(257 35% 39%)"
+                                  :fill         "hsl(0 0% 10%)"}
                                  x y 7)))
         tris  (vec (for [tri (range ball-count)]
                      (svg/g {:transform "rotate(0)"}
                             (svg/polyline {:stroke-width 1
-                                           :stroke       "hsl(257deg, 35%, 29%)"
+                                           :stroke       "hsl(257 35% 23%)"
                                            :fill         "none"}
                                           (->> (range 4)
                                                (map (fn [ball-index]
@@ -122,7 +122,7 @@
                      (svg/line x1 y1 x2 y2)))
         scene (-> (svg/g
                    (svg/g {:stroke-width 1
-                           :stroke       "hsl(257deg, 35%, 49%)"
+                           :stroke       "hsl(257 35% 39%)"
                            :fill         "none"}
                           lines)
                    (svg/g tris)))]
