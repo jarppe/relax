@@ -6,9 +6,6 @@
             [relax.util :refer [js-get]]))
 
 
-(println "app: staring...")
-
-
 (defonce init-app
   (delay (println "init: registering worker...")
          (-> (js-get js/navigator "serviceWorker")

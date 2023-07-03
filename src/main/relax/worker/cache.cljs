@@ -22,13 +22,14 @@
     (-> (p/resolved request)
         (p/then js/fetch)
         (p/then (fn [^js response]
+                  (js/console.log "cache: cache-fetch: fetch successfull" request response)
                   (-> (put-in-cache request (.clone response))
                       (p/then (fn [_] response)))))
         (p/catch (fn [error]
-                   (js/console.log "js/fetch: error" error)
+                   (js/console.log "cache: cache-fetch: fetch failed" request error)
                    (js/caches.match request)))
         (p/catch (fn [error]
-                   (js/console.error "cache-fetch: failed" error)
+                   (js/console.log "cache: cache-fetch: cache failed" request error)
                    (throw error))))))
 
 

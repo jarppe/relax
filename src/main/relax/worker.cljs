@@ -26,6 +26,7 @@
 
 (.addEventListener js/self "fetch"
                    (fn [^js event]
+                     (js/console.log "worker: fetch" event)
                      (.respondWith event (cache/cache-fetch event))))
 
 
