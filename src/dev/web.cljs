@@ -19,4 +19,8 @@
     (g/get elem :foo))
   ;
 
-  (subs js/location.hash 1))
+  (subs js/location.hash 1)
+
+  (js/console.log "hi")
+  js/location
+  (js/localStorage.getItem "scene-name"))

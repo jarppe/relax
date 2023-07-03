@@ -26,11 +26,10 @@
 
 (.addEventListener js/self "fetch"
                    (fn [^js event]
-                     (js/console.log "worker: fetch" event)
                      (.respondWith event (cache/cache-fetch event))))
 
 
-(.addEventListener js/self  "message"
+(.addEventListener js/self "message"
                    (fn [event]
                      (js/console.info "worker: message" event)))
 
