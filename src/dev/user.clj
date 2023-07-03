@@ -82,6 +82,15 @@
        (* radius (cos angle))]))
 
 
+  (defn foo [& attrs]
+    attrs)
 
+  (->> {:a 1
+        :b 2
+        :c 3}
+       (mapcat identity)
+       (apply foo))
+
+  (foo :a 1 :b 2)
   ;
   )
