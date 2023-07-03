@@ -1,22 +1,23 @@
 (ns relax.fullscreen
-  (:require [applied-science.js-interop :as j]
-            [relax.state :as state]
-            [relax.util :as u]))
+  (:require [relax.state :as state]
+            [relax.util :as u :refer [js-get]]))
 
 
 (defn- set-fullscreen [on?]
   (if on?
     (do (u/add-class "fullscreen" "active")
-        (-> (j/call (u/get-elem "wrapper") :requestFullscreen)
-            (j/call :then (fn [_] (println "fullscreen: success")) (fn [_] (println "fullscreen: rejected")))))
+        (-> (.requestFullscreen (u/get-elem "wrapper"))
+            (.then (fn [_] (println "fullscreen: success"))
+                   (fn [_] (println "fullscreen: rejected")))))
     (do (u/remove-class "fullscreen" "active")
-        (-> (j/call js/document :exitFullscreen)
-            (j/call :then (fn [_] (println "fullscreen: success")) (fn [_] (println "fullscreen: rejected")))))))
+        (-> (js/document.exitFullscreen)
+            (.then (fn [_] (println "fullscreen: success"))
+                   (fn [_] (println "fullscreen: rejected")))))))
 
 
 (defn init! []
-  (let [can-fullscreen? (some? (j/get js/document :exitFullscreen))
-        is-fullscreen?  (some? (j/get js/document :fullscreenElement))]
+  (let [can-fullscreen? (some? (js-get js/document "exitFullscreen"))
+        is-fullscreen?  (some? (js-get js/document "fullscreenElement"))]
     (when-not can-fullscreen?
       (u/set-attr "fullscreen" :display "none"))
     (when can-fullscreen?

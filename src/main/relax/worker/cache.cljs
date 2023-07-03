@@ -1,37 +1,37 @@
 (ns relax.worker.cache
-  (:require [applied-science.js-interop :as j]
-            [promesa.core :as p]))
+  (:require [promesa.core :as p]
+            [relax.util :refer [js-get js-get-in]]))
 
 
 (defn cache []
-  (j/call js/caches :open "v2"))
+  (js/caches.open "v2"))
 
 
 (defn add-resources-to-cache [resources]
   (-> (cache)
-      (p/then (fn [cache] (j/call cache :addAll (clj->js resources))))))
+      (p/then (fn [^js cache] (.addAll cache (clj->js resources))))))
 
 
 (defn put-in-cache [req resp]
   (-> (cache)
-      (p/then (fn [cache] (j/call cache :put req resp)))))
+      (p/then (fn [^js cache] (.put cache req resp)))))
 
 
 (defn cache-fetch [event]
-  (let [request (j/get event :request)]
+  (let [request (js-get event "request")]
     (-> (p/resolved request)
         (p/then js/fetch)
-        (p/then (fn [response]
-                  (-> (put-in-cache request (j/call response :clone))
+        (p/then (fn [^js response]
+                  (-> (put-in-cache request (.clone response))
                       (p/then (fn [_] response)))))
         (p/catch (fn [error]
                    (js/console.log "js/fetch: error" error)
-                   (j/call js/caches :match request)))
+                   (js/caches.match request)))
         (p/catch (fn [error]
                    (js/console.error "cache-fetch: failed" error)
                    (throw error))))))
 
 
 (defn enable-navigation-preload []
-  (when-let [preload (j/get-in js/self [:registration :navigationPreload])]
-    (j/call preload :enable)))
+  (when-let [preload (js-get-in js/self ["registration" "navigationPreload"])]
+    (.enable preload)))

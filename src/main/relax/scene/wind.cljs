@@ -1,24 +1,26 @@
 (ns relax.scene.wind
-  (:require [applied-science.js-interop :as j]
-            [relax.svg :as svg]
-            [relax.util :as u]))
+  (:require [relax.svg :as svg]
+            [relax.util :as u :refer [js-get]]))
 
 
-(defn on-resize [{:keys [elem scene]} _]
-  (let [width  (j/get elem :clientWidth)
-        height (j/get elem :clientHeight)
+(defn on-resize [scene-data _]
+  (let [elem   (:elem scene-data)
+        scene  (:scene scene-data)
+        width  (js-get elem "clientWidth")
+        height (js-get elem "clientHeight")
         scale  (min (/ width 2000.0)
                     (/ height 1000.0))]
     (js/console.log `on-resize width "x" height "=>" scale)
     (svg/set-attr elem :viewBox (str "0 0 " width " " height))
-    (svg/set-attr scene :transform (str "scale(" scale ")"))))
+    (svg/set-attr scene :transform (str "scale(" scale ")")))
+  scene-data)
 
 
 (def line-length-scaler (comp (u/bound 0.0 1.0)
                               (u/scaler [0.0 400.0] [0.0 1.0])))
 
 
-(defn on-tick [scene-data ts]
+(defn on-tick [scene-data _ts]
   (let [wind-dx (:wind-dx scene-data)
         wind-x  (+ (:wind-x scene-data) wind-dx)
         wind-dy (:wind-dy scene-data)

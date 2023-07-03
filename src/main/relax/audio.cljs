@@ -1,6 +1,5 @@
 (ns relax.audio
-  (:require [applied-science.js-interop :as j]
-            ["Howl" :as Howl]
+  (:require ["Howl" :as Howl]
             [relax.state :as state]
             [relax.util :as u]))
 
@@ -14,15 +13,15 @@
 
 
 (def audio-elements (->> audio-urls
-                         (mapv (fn [f] (Howl. (j/obj :src f
-                                                     :volume 0.4))))))
+                         (mapv (fn [f] (Howl. #js {:src    f
+                                                   :volume 0.4})))))
 
 
 (defn play [sound-index balance]
   (when (:sound-on? @state/app-state)
-    (doto (nth audio-elements sound-index)
-      (j/call :stereo balance)
-      (j/call :play))))
+    (let [^js audio (nth audio-elements sound-index)]
+      (.stereo audio balance)
+      (.play audio))))
 
 
 

@@ -1,7 +1,6 @@
 (ns relax.controls
-  (:require [applied-science.js-interop :as j]
-            [relax.state :refer [app-state]]
-            [relax.util :as u]
+  (:require [relax.state :refer [app-state]]
+            [relax.util :as u :refer [js-get]]
             [relax.scenes :as scenes]))
 
 
@@ -30,14 +29,14 @@
 (def on-next (on-change-scene +1))
 
 
-(defn on-keydown [e]
-  (when-let [handler (case (j/get e :code)
+(defn on-keydown [^js e]
+  (when-let [handler (case (js-get e :code)
                        "ArrowUp" toggle-fullscreen
                        "ArrowRight" on-next
                        "ArrowLeft" on-prev
                        "ArrowDown" toggle-sound
                        nil)]
-    (j/call e :preventDefault)
+    (.preventDefault e)
     (handler))
   nil)
 

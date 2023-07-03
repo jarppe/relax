@@ -1,8 +1,7 @@
 (ns relax.scene.pendulum
-  (:require [applied-science.js-interop :as j]
-            [relax.svg :as svg]
+  (:require [relax.svg :as svg]
             [relax.audio :as audio]
-            [relax.util :as u]))
+            [relax.util :as u :refer [js-get js-set]]))
 
 
 (def ^:cont ball-count (count audio/audio-elements))
@@ -14,8 +13,8 @@
 (defn on-resize [scene-data _]
   (let [elem   (:elem scene-data)
         scene  (:scene scene-data)
-        width  (j/get elem :clientWidth)
-        height (j/get elem :clientHeight)
+        width  (js-get elem "clientWidth")
+        height (js-get elem "clientHeight")
         scale  (min (/ width 2000.0)
                     (/ height 1000.0))]
     (js/console.log `on-resize width "x" height "=>" scale)
@@ -54,7 +53,7 @@
     (doseq [n (range ball-count)]
       (let [ball       (nth balls n)
             orbit      (nth orbits n)
-            speed      (j/get ball :speed)
+            speed      (js-get ball :speed)
             angle      (mod (* ts speed) 360.0)
             phase      (if (< 90 angle 270) "d" "r")
             phase-dist (angle->phase-dist angle)]
@@ -86,7 +85,7 @@
         speed        (ball-index->speed n)]
     (-> (svg/circle {:fill (str "hsl(" (ball-index->ball-fill n) " 100% 50%)")} orbit-radius 0 15)
         (svg/g)
-        (j/assoc! :speed speed))))
+        (js-set :speed speed))))
 
 
 (defn- make-orbit [n]

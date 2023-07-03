@@ -1,6 +1,6 @@
 (ns relax.scene.tri
-  (:require [applied-science.js-interop :as j]
-            [relax.svg :as svg]))
+  (:require [relax.svg :as svg]
+            [relax.util :refer [js-get]]))
 
 
 (def ^:const PI js/Math.PI)
@@ -82,8 +82,8 @@
 (defn on-resize [scene-data _]
   (let [elem   (:elem scene-data)
         scene  (:scene scene-data)
-        width  (j/get elem :clientWidth)
-        height (j/get elem :clientHeight)
+        width  (js-get elem "clientWidth")
+        height (js-get elem "clientHeight")
         scale  (min (/ width 1000.0)
                     (/ height 1000.0))]
     (js/console.log `on-resize width "x" height "=>" scale)

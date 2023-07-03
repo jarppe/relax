@@ -31,7 +31,7 @@
 (deftest format-transform-test
   (is (= "rotate(1) "
          (svg/format-transform {:rotate [1]})))
-  (is (= "rotate(1) scale(2 3) translate(4 5 6) skew(7 8) "
+  (is (= "translate(4 5 6) rotate(1) scale(2 3) skew(7 8) "
          (svg/format-transform {:rotate    [1]
                                 :scale     [2 3]
                                 :translate [4 5 6]
@@ -82,7 +82,7 @@
     (svg/set-special-attrs elem [[:rotate 2]])
     (is (= (g/get elem :skew) [1 2]))
     (is (= (g/get elem :rotate) 2))
-    (is (= {"transform" "skew(1 2) rotate(2) "} @attrs)))
+    (is (= {"transform" "rotate(2) skew(1 2) "} @attrs)))
   (let [[elem attrs] (make-elem)]
     (g/set elem :skew [1 2])
     (svg/set-special-attrs elem [[:rotate 2]
