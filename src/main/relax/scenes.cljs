@@ -1,6 +1,6 @@
 (ns relax.scenes
   (:require [relax.state :as state]
-            [relax.util :as u]
+            [relax.util :as u :refer [js-set]]
             [relax.scene.pendulum :as pendulum]
             [relax.scene.wind :as wind]
             [relax.scene.tri :as tri]))
@@ -33,7 +33,8 @@
     (u/set-text "scene-name" (:name scene))
     (-> (u/clear-elem "app")
         (u/append (:elem scene-data)))
-    ((:on-resize scene) scene-data nil)))
+    ((:on-resize scene) scene-data nil)
+    (js-set js/location "hash" (:name scene))))
 
 
 (defn on-tick [ts]
@@ -51,4 +52,11 @@
 (defn init! []
   (u/add-event-listener js/window :resize on-resize)
   (state/on-change :scene-id swap-scene)
-  (swap! state/app-state assoc :scene-id 0))
+  (let [scene-name (subs js/location.hash 1)
+        scene-id   (some (fn [scene-index]
+                           (when (-> (nth scenes scene-index)
+                                     :name
+                                     (= scene-name))
+                             scene-index))
+                         (range (count scenes)))]
+    (swap! state/app-state assoc :scene-id (or scene-id 0))))

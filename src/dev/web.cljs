@@ -18,4 +18,5 @@
     (g/set elem :foo 42)
     (g/get elem :foo))
   ;
-  )
+
+  (subs js/location.hash 1))
