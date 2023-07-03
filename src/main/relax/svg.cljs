@@ -1,26 +1,95 @@
 (ns relax.svg
-  (:require [applied-science.js-interop :as j]))
+  (:require [clojure.string :as str]
+            [goog.object :as g]))
 
 
 (def ^:const xmlns "http://www.w3.org/2000/svg")
 
 
+(def transform-attr [:translate
+                     :rotate
+                     :scale
+                     :skew])
+
+
+(def transform-attr? (set transform-attr))
+(def special-attr? (conj transform-attr? :transform))
+
+
+(defn parse-transform [transform]
+  (when transform
+    (reduce (fn [acc [_ attr args]]
+              (assoc acc (keyword attr) (map parse-double (str/split args #"[\s,]"))))
+            {}
+            (re-seq #"([a-z]+)\(([^)]+)\)\s*" transform))))
+
+
+(defn format-transform [specials]
+  (reduce (fn [acc attr-name]
+            (if-let [attr-value (attr-name specials)]
+              (str acc
+                   (name attr-name)
+                   "("
+                   (if (sequential? attr-value)
+                     (str/join " " attr-value)
+                     attr-value)
+                   ") ")
+              acc))
+          ""
+          transform-attr))
+
+
+(defn get-special-attrs [elem]
+  (reduce (fn [acc attr-key]
+            (if-let [value (g/get elem attr-key)]
+              (assoc acc attr-key value)
+              acc))
+          {}
+          transform-attr))
+
+
+(defn merge-special-attrs [elem specials]
+  (reduce (fn [acc [attr-name attr-value]]
+            (if (= attr-name :transform)
+              (parse-transform attr-value)
+              (assoc acc attr-name attr-value)))
+          (get-special-attrs elem)
+          specials))
+
+
+(defn set-special-attrs [elem specials]
+  (let [attrs (merge-special-attrs elem specials)]
+    (doseq [transform-attr-name transform-attr?]
+      (g/set elem transform-attr-name (transform-attr-name attrs)))
+    (.setAttributeNS elem nil "transform" (format-transform attrs)))
+  elem)
+
+
 (defn set-attr [elem & attrs]
-  (loop [[attr-name attr-value & more] attrs]
-    (j/call elem :setAttributeNS nil (name attr-name) (str attr-value))
-    (if more
-      (recur more)
-      elem)))
+  (when (seq attrs)
+    (let [specials (loop [specials                      []
+                          [attr-name attr-value & more] attrs]
+                     (if-not attr-name
+                       specials
+                       (let [special? (special-attr? attr-name)]
+                         (when-not special?
+                           (.setAttributeNS elem nil (name attr-name) (str attr-value)))
+                         (recur (if special?
+                                  (conj specials [attr-name attr-value])
+                                  specials)
+                                more))))]
+      (when (seq specials)
+        (set-special-attrs elem specials))))
+  elem)
 
 
 (defn get-attr [elem attr-name]
-  (j/call elem :getAttributeNS nil (name attr-name)))
-
+  (.getAttributeNS elem  nil (name attr-name)))
 
 
 (defn append* [elem children]
   (doseq [c children]
-    (j/call elem :appendChild c))
+    (.appendChild elem c))
   elem)
 
 
@@ -29,12 +98,14 @@
 
 
 (defn create-element [tag & children]
-  (let [elem             (j/call js/document :createElementNS xmlns tag)
+  (let [elem             (.createElementNS js/document xmlns tag)
         [attrs children] (if (map? (first children))
                            [(first children) (rest children)]
                            [nil children])]
-    (doseq [[attr-name attr-value] attrs]
-      (set-attr elem attr-name attr-value))
+    (g/set elem "translate" [0.0 0.0])
+    (g/set elem "rotate" 0.0)
+    (g/set elem "scale" 1.0)
+    (apply set-attr elem (mapcat identity attrs))
     (doseq [c children]
       (if (sequential? c)
         (append* elem c)
