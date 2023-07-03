@@ -20,9 +20,10 @@
                     (/ height 1000.0))]
     (js/console.log `on-resize width "x" height "=>" scale)
     (svg/set-attr elem :viewBox (str "0 0 " width " " height))
-    (svg/set-attr scene :transform (str "translate(" (* width 0.5) " " height ") "
-                                        "scale(" scale ")"
-                                        "rotate(-90)"))
+    (svg/set-attr scene
+                  :translate [(* width 0.5) height]
+                  :scale scale
+                  :rotate -90.0)
     scene-data))
 
 
@@ -53,8 +54,7 @@
     (doseq [n (range ball-count)]
       (let [ball       (nth balls n)
             orbit      (nth orbits n)
-            speed      (-> (svg/get-attr ball :speed)
-                           (js/parseFloat))
+            speed      (j/get ball :speed)
             angle      (mod (* ts speed) 360.0)
             phase      (if (< 90 angle 270) "d" "r")
             phase-dist (angle->phase-dist angle)]
@@ -84,9 +84,9 @@
 (defn- make-ball [n]
   (let [orbit-radius (ball-index->orbit-radius n)
         speed        (ball-index->speed n)]
-    (svg/g {:speed speed}
-           (svg/circle {:fill (str "hsl(" (ball-index->ball-fill n) " 100% 50%)")}
-                       orbit-radius 0 15))))
+    (-> (svg/circle {:fill (str "hsl(" (ball-index->ball-fill n) " 100% 50%)")} orbit-radius 0 15)
+        (svg/g)
+        (j/assoc! :speed speed))))
 
 
 (defn- make-orbit [n]

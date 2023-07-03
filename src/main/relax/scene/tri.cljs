@@ -1,8 +1,6 @@
 (ns relax.scene.tri
   (:require [applied-science.js-interop :as j]
-            [relax.svg :as svg]
-            [relax.audio :as audio]
-            [relax.util :as u]))
+            [relax.svg :as svg]))
 
 
 (def ^:const PI js/Math.PI)
